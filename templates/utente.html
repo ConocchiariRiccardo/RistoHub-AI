@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Il mio account — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container navbar-inner">
+    <div class="logo"><a href="../index.php">RistoHub</a></div>
+    <nav class="nav-links"></nav>
+    <div class="nav-right-buttons">
+      <a href="./logout.php" class="nav-cta nav-cta-outline">Logout</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="utente-section">
+    <div class="container">
+
+      <!-- Profilo -->
+      <div class="profilo-card">
+        <div class="profilo-avatar">👤</div>
+        <div class="profilo-info">
+          <h2><[nome]> <[cognome]></h2>
+          <p>@<[username]></p>
+          <p><[email]></p>
+        </div>
+        <div class="profilo-punti">
+          <div class="punti-badge">
+            <span class="punti-numero"><[punti]></span>
+            <span class="punti-label">Punti fedeltà</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Azioni rapide -->
+      <div class="azioni-rapide">
+        <a href="./prenotazione.php" class="btn-primary">📅 Prenota un tavolo</a>
+        <a href="./menu.php" class="btn-secondary">🍽️ Guarda il menu</a>
+        <a href="./recensione.php" class="btn-secondary">⭐ Scrivi recensione</a>
+      </div>
+
+      <!-- Prenotazioni -->
+      <div class="section-header" style="margin-top:3rem;">
+        <h2 class="section-title">Le mie prenotazioni</h2>
+      </div>
+      <div class="prenotazioni-grid">
+        <[prenotazioni]>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-bottom">© 2025 RistoHub</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <script src="../js/admin.js" defer></script>
+</head>
+<body class="admin-body">
+
+<header class="admin-header">
+  <div class="admin-header-inner">
+    <div class="logo">RistoHub <span>Admin</span></div>
+    <div class="admin-user">
+      👤 <[nome_admin]>
+      <a href="./logout.php" class="btn-logout">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="admin-sidebar">
+    <ul>
+      <li><a href="?tab=statistiche" class="<[tab_attiva]>" data-tab="statistiche">📊 Statistiche</a></li>
+      <li><a href="?tab=menu" class="<[tab_attiva]>" data-tab="menu">🍽️ Menu</a></li>
+      <li><a href="?tab=tavoli" class="<[tab_attiva]>" data-tab="tavoli">🪑 Tavoli</a></li>
+      <li><a href="?tab=prenotazioni" class="<[tab_attiva]>" data-tab="prenotazioni">📅 Prenotazioni</a></li>
+      <li><a href="?tab=ordini" class="<[tab_attiva]>" data-tab="ordini">📋 Ordini</a></li>
+      <li><a href="?tab=magazzino" class="<[tab_attiva]>" data-tab="magazzino">📦 Magazzino</a></li>
+      <li><a href="?tab=utenti" class="<[tab_attiva]>" data-tab="utenti">👥 Utenti</a></li>
+    </ul>
+  </nav>
+
+  <!-- CONTENUTO PRINCIPALE -->
+  <main class="admin-main">
+
+    <!-- STATISTICHE -->
+    <section id="statistiche" class="admin-section">
+      <h2>📊 Statistiche & Incassi</h2>
+      <[statistiche]>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="admin-section">
+      <h2>🍽️ Gestione Menu</h2>
+      <[piatti]>
+      <div class="section-cta-center">
+        <button class="btn-primary" onclick="toggleForm('form-piatto')">+ Aggiungi piatto</button>
+      </div>
+      <div id="form-piatto" class="admin-form-container">
+        <h3><[titolo_form_piatto]></h3>
+        <[form_piatto]>
+      </div>
+    </section>
+
+    <!-- TAVOLI -->
+    <section id="tavoli" class="admin-section">
+      <h2>🪑 Gestione Tavoli</h2>
+      <[tavoli]>
+      <div class="section-cta-center">
+        <button class="btn-primary" onclick="toggleForm('form-tavolo')">+ Aggiungi tavolo</button>
+      </div>
+      <div id="form-tavolo" class="admin-form-container">
+        <h3><[titolo_form_tavolo]></h3>
+        <[form_tavolo]>
+      </div>
+    </section>
+
+    <!-- PRENOTAZIONI -->
+    <section id="prenotazioni" class="admin-section">
+      <h2>📅 Prenotazioni</h2>
+      <[prenotazioni]>
+    </section>
+
+    <!-- ORDINI -->
+    <section id="ordini" class="admin-section">
+      <h2>📋 Gestione Ordini</h2>
+      <[ordini]>
+    </section>
+
+    <!-- MAGAZZINO -->
+    <section id="magazzino" class="admin-section">
+      <h2>📦 Gestione Magazzino</h2>
+      <[magazzino]>
+      <div class="section-cta-center">
+        <button class="btn-primary" onclick="toggleForm('form-ingrediente')">+ Aggiungi ingrediente</button>
+      </div>
+      <div id="form-ingrediente" class="admin-form-container">
+        <h3><[titolo_form_ingrediente]></h3>
+        <[form_ingrediente]>
+      </div>
+    </section>
+
+    <!-- UTENTI -->
+    <section id="utenti" class="admin-section">
+      <h2>👥 Gestione Utenti</h2>
+      <[utenti]>
+      <div class="section-cta-center">
+        <button class="btn-primary" onclick="toggleForm('form-utente')">+ Aggiungi utente</button>
+      </div>
+      <div id="form-utente" class="admin-form-container">
+        <h3><[titolo_form_utente]></h3>
+        <[form_utente]>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
