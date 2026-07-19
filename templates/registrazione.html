@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrati — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container navbar-inner">
+    <div class="logo"><a href="../index.php">RistoHub</a></div>
+    <nav class="nav-links"></nav>
+    <div class="nav-right-buttons">
+      <a href="../index.php" class="nav-cta">Home</a>
+      <a href="./login.php" class="nav-cta">Login</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h2 class="auth-title">Crea il tuo account</h2>
+      <p class="auth-subtitle">Registrati per prenotare e accumulare punti fedeltà</p>
+
+      <[errore]>
+
+      <form action="./registrazione.php" method="POST" class="auth-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="il-tuo-username" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" placeholder="Mario" required>
+          </div>
+          <div class="form-group">
+            <label for="cognome">Cognome</label>
+            <input type="text" id="cognome" name="cognome" placeholder="Rossi" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="mario@email.it" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="min. 8 caratteri" required>
+        </div>
+        <div class="form-group">
+          <label for="conferma_password">Conferma password</label>
+          <input type="password" id="conferma_password" name="conferma_password" placeholder="ripeti la password" required>
+        </div>
+        <button type="submit" name="registra" class="btn-primary btn-full">Crea account</button>
+      </form>
+
+      <p class="auth-link">
+        Hai già un account? <a href="./login.php">Accedi</a>
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-bottom">© 2025 RistoHub</div>
+</footer>
+
+</body>
+</html>

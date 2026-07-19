@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Prenota — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/prenotazione.js" defer></script>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container navbar-inner">
+    <div class="logo"><a href="../index.php">RistoHub</a></div>
+    <nav class="nav-links"></nav>
+    <div class="nav-right-buttons">
+      <[nav_auth]>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="booking-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Riserva il tuo posto</div>
+        <h2 class="section-title">Prenota un tavolo</h2>
+        <p class="section-subtitle">Scegli data, orario e numero di persone.</p>
+      </div>
+
+      <[successo]>
+      <[errore]>
+
+      <div class="booking-grid">
+        <div class="order-panel">
+          <header class="order-header">
+            <h2>Dati prenotazione</h2>
+          </header>
+
+          <form id="booking-form" action="./prenotazione.php" method="POST" class="booking-form">
+            <div class="form-group">
+              <label for="nome">Nome e cognome *</label>
+              <input type="text" id="nome" name="nome"
+                     value="<[nome_default]>"
+                     placeholder="Mario Rossi" required>
+            </div>
+
+            <div class="form-group">
+              <label for="telefono">Telefono *</label>
+              <input type="tel" id="telefono" name="telefono"
+                     placeholder="333 1234567" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="data">Data *</label>
+                <input type="date" id="data" name="data" required>
+              </div>
+              <div class="form-group">
+                <label for="ora">Orario *</label>
+                <input type="time" id="ora" name="ora"
+                       min="12:00" max="22:30" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="persone">Numero di persone *</label>
+              <input type="number" id="persone" name="persone"
+                     min="1" max="20" required>
+            </div>
+
+            <div class="form-group">
+              <label for="note">Note (opzionale)</label>
+              <textarea id="note" name="note" rows="3"
+                        placeholder="Intolleranze, occasioni speciali..."></textarea>
+            </div>
+
+            <input type="hidden" name="tavoli_id" id="tavoli_id">
+
+            <button type="submit" name="prenota" class="btn-primary btn-full">
+              Invia richiesta
+            </button>
+          </form>
+        </div>
+
+        <aside class="order-panel booking-slots">
+          <h3>Tavoli disponibili</h3>
+          <p id="msg-tavoli" class="booking-slots-info">
+            Seleziona data, orario e numero di persone per vedere i tavoli disponibili.
+          </p>
+          <ul class="tavoli-list" id="tavoli-list"></ul>
+          <p id="tavoli-nessuno" style="display:none; color:red;">
+            Nessun tavolo disponibile per questa data e orario.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div>
+      <div class="footer-logo">RistoHub</div>
+      <p>Via Roma 123, 00100 Città</p>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 RistoHub</div>
+</footer>
+
+</body>
+</html>

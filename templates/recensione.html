@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Recensioni — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container navbar-inner">
+    <div class="logo"><a href="../index.php">RistoHub</a></div>
+    <nav class="nav-links"></nav>
+    <div class="nav-right-buttons">
+      <[nav_auth]>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="reviews-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Opinioni dei clienti</div>
+        <h2 class="section-title">Recensioni</h2>
+        <p class="section-subtitle">
+          Media voti: <strong><[media_voti]> / 5 ★</strong>
+        </p>
+      </div>
+
+      <[successo]>
+      <[errore]>
+
+      <div class="review-form-container">
+        <h3>Lascia la tua recensione</h3>
+        <form action="./recensione.php" method="POST" class="review-form">
+          <div class="form-group">
+            <label>Il tuo voto</label>
+            <div class="star-rating">
+              <input type="radio" name="voto" id="v5" value="5">
+              <label for="v5">★</label>
+              <input type="radio" name="voto" id="v4" value="4">
+              <label for="v4">★</label>
+              <input type="radio" name="voto" id="v3" value="3">
+              <label for="v3">★</label>
+              <input type="radio" name="voto" id="v2" value="2">
+              <label for="v2">★</label>
+              <input type="radio" name="voto" id="v1" value="1">
+              <label for="v1">★</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="commento">La tua esperienza</label>
+            <textarea name="commento" id="commento" rows="4"
+                      placeholder="Racconta la tua esperienza..." required></textarea>
+          </div>
+          <button type="submit" name="invia" class="btn-primary">Invia recensione</button>
+        </form>
+      </div>
+
+      <div class="reviews-grid" style="margin-top:3rem;">
+        <[recensioni]>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div>
+      <div class="footer-logo">RistoHub</div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 RistoHub</div>
+</footer>
+
+</body>
+</html>
