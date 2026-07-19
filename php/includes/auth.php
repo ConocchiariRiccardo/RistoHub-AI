@@ -20,7 +20,7 @@ function requireAccesso(string $servizio): void {
     requireLogin();
     $utente = new Utente();
     if (!$utente->hasAccesso($_SESSION['user_id'], $servizio)) {
-        header("Location: ../public/login.php");
+        header("Location: /login.php");
         exit;
     }
 }

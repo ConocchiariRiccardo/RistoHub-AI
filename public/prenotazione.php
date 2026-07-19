@@ -21,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prenota'])) {
     $note     = trim($_POST['note'] ?? '');
     $tavoliId = !empty($_POST['tavoli_id']) ? intval($_POST['tavoli_id']) : null;
     $usersId  = getUserId();
+    $orari_validi = [
+        '12:00','12:30','13:00','13:30','14:00','14:30',
+        '19:30','20:00','20:30','21:00','21:30','22:00','22:30'
+    ];
 
     if (empty($nome) || empty($telefono) || empty($data) || empty($ora) || $persone <= 0) {
         $errore = "Compila tutti i campi obbligatori.";
@@ -30,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prenota'])) {
             $errore = "Data non valida.";
         } elseif ($d < new DateTime('today')) {
             $errore = "Non puoi prenotare per una data passata.";
+        } elseif (!in_array($ora, $orari_validi)){
+            $errore = "Seleziona un orario valido tra quelli disponibili.";
         } else {
             $ok = $prenotazioneObj->aggiungiPrenotazione(
                 $nome, $telefono, $data, $ora, $persone, $note, $usersId, $tavoliId

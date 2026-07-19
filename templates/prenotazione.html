@@ -58,9 +58,29 @@
                 <input type="date" id="data" name="data" required>
               </div>
               <div class="form-group">
-                <label for="ora">Orario *</label>
-                <input type="time" id="ora" name="ora"
-                       min="12:00" max="22:30" required>
+                <div class="form-group">
+                  <label for="ora">Orario *</label>
+                  <select id="ora" name="ora" required>
+                    <option value="">Seleziona orario</option>
+                    <optgroup label="🍽️ Pranzo">
+                      <option value="12:00">12:00</option>
+                      <option value="12:30">12:30</option>
+                      <option value="13:00">13:00</option>
+                      <option value="13:30">13:30</option>
+                      <option value="14:00">14:00</option>
+                      <option value="14:30">14:30</option>
+                    </optgroup>
+                    <optgroup label="🌙 Cena">
+                      <option value="19:30">19:30</option>
+                      <option value="20:00">20:00</option>
+                      <option value="20:30">20:30</option>
+                      <option value="21:00">21:00</option>
+                      <option value="21:30">21:30</option>
+                      <option value="22:00">22:00</option>
+                      <option value="22:30">22:30</option>
+                    </optgroup>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -85,14 +105,22 @@
         </div>
 
         <aside class="order-panel booking-slots">
-          <h3>Tavoli disponibili</h3>
-          <p id="msg-tavoli" class="booking-slots-info">
-            Seleziona data, orario e numero di persone per vedere i tavoli disponibili.
+          <h3>📋 Riepilogo prenotazione</h3>
+          <p class="booking-slots-info">
+            Compila il modulo per vedere il riepilogo della tua richiesta.
           </p>
-          <ul class="tavoli-list" id="tavoli-list"></ul>
-          <p id="tavoli-nessuno" style="display:none; color:red;">
-            Nessun tavolo disponibile per questa data e orario.
-          </p>
+          <div id="riepilogo-panel" style="display:none;">
+            <ul class="riepilogo-list">
+              <li><span>📅 Data</span><strong id="r-data">—</strong></li>
+              <li><span>🕐 Orario</span><strong id="r-ora">—</strong></li>
+              <li><span>👥 Persone</span><strong id="r-persone">—</strong></li>
+              <li><span>👤 Nome</span><strong id="r-nome">—</strong></li>
+              <li><span>📞 Telefono</span><strong id="r-telefono">—</strong></li>
+            </ul>
+            <p class="riepilogo-nota">
+              ℹ️ Il tavolo verrà assegnato dal nostro staff dopo la conferma.
+            </p>
+          </div>
         </aside>
       </div>
     </div>
