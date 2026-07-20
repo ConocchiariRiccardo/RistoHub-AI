@@ -25,7 +25,7 @@ $ordiniAttivi    = $ordineObj->getOrdiniAttivi();
 $ordiniPronti    = $ordineObj->getOrdiniPronti();
 
 $idTavolo = isset($_GET['tavolo']) ? intval($_GET['tavolo']) : 0;
-$piattiOrdine = $idTavolo > 0 ? [] : [];
+$piattiOrdine = [];
 
 if ($idTavolo > 0) {
     $ordineAttivo = $ordineObj->getOrdineAttivoByTavolo($idTavolo);
@@ -41,10 +41,12 @@ if (isset($_GET['modifica_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (isset($_POST['assegna_tavolo'])) {
-        $idPren   = intval($_POST['id_prenotazione']);
-        $idTav    = intval($_POST['id_tavolo_assegna']);
-        $prenotazioneObj->assegnaTavolo($idPren, $idTav);
+    if (isset($_POST['set_stato_tavolo'])) {
+        $tavoloObj->setStato(intval($_POST['id_tavolo_stato']), $_POST['set_stato_tavolo']);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?tab=tavoli_vista"); exit;
+
+    } elseif (isset($_POST['assegna_tavolo'])) {
+        $prenotazioneObj->assegnaTavolo(intval($_POST['id_prenotazione']), intval($_POST['id_tavolo_assegna']));
         header("Location: " . $_SERVER['PHP_SELF'] . "?tab=sala"); exit;
 
     } elseif (isset($_POST['elimina_prenotazione'])) {
@@ -84,14 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// HTML select tavoli
 $htmlSelectTavoli = "";
 foreach ($tavoli as $t) {
     $selected = $idTavolo == $t['id'] ? 'selected' : '';
     $htmlSelectTavoli .= "<option value='{$t['id']}' $selected>Tavolo {$t['numero']} ({$t['stato']})</option>";
 }
 
-// HTML menu
 $htmlMenu = "";
 foreach ($piattiPerCat as $cat => $piatti) {
     $htmlMenu .= "<div class='menu-category'><h3>" . htmlspecialchars($cat) . "</h3><ul>";
@@ -105,7 +105,6 @@ foreach ($piattiPerCat as $cat => $piatti) {
     $htmlMenu .= "</ul></div>";
 }
 
-// HTML ordine corrente
 $htmlOrdineItems = "";
 foreach ($piattiOrdine as $p) {
     $htmlOrdineItems .= "<li class='order-item' data-id='{$p['id']}' data-price='{$p['prezzo_unitario']}'>";
@@ -119,7 +118,6 @@ foreach ($piattiOrdine as $p) {
     $htmlOrdineItems .= "</li>";
 }
 
-// HTML ordini pronti
 $htmlOrdiniPronti = "";
 if (!empty($ordiniPronti)) {
     foreach ($ordiniPronti as $o) {
@@ -127,7 +125,6 @@ if (!empty($ordiniPronti)) {
     }
 }
 
-// HTML prenotazioni
 $htmlPrenotazioni = "";
 foreach ($prenotazioni as $p) {
     $tavolo = $p['numero_tavolo'] ? "Tavolo {$p['numero_tavolo']}" : "Non assegnato";
@@ -139,8 +136,6 @@ foreach ($prenotazioni as $p) {
     $htmlPrenotazioni .= "<span class='badge badge-blue' style='margin-left:8px'>" . $p['stato'] . "</span>";
     $htmlPrenotazioni .= "</div>";
     $htmlPrenotazioni .= "<div class='pren-actions'>";
-
-    // Dropdown assegna tavolo
     $htmlPrenotazioni .= "<div class='dropdown-container'>";
     $htmlPrenotazioni .= "<button type='button' class='btn-secondary btn-sm dropdown-toggle' onclick='toggleDropdown(\"drop_{$p['id']}\")'>Assegna tavolo ▾</button>";
     $htmlPrenotazioni .= "<div class='dropdown-menu' id='drop_{$p['id']}' style='display:none'>";
@@ -152,7 +147,6 @@ foreach ($prenotazioni as $p) {
         $htmlPrenotazioni .= "<input type='hidden' name='id_tavolo_assegna' value='{$t['id']}'>";
     }
     $htmlPrenotazioni .= "</form></div></div>";
-
     $htmlPrenotazioni .= "<form method='post' style='display:inline'>";
     $htmlPrenotazioni .= "<input type='hidden' name='id_prenotazione' value='{$p['id']}'>";
     $htmlPrenotazioni .= "<button type='button' class='btn-secondary btn-sm' onclick=\"modificaPrenotazione({$p['id']})\">Modifica</button>";
@@ -161,7 +155,8 @@ foreach ($prenotazioni as $p) {
     $htmlPrenotazioni .= "</div></div>";
 }
 
-// HTML form prenotazione
+$idTavoloAssegnato = $prenotazioneDaModificare['tavoli_id'] ?? null;
+
 $titolo = $prenotazioneDaModificare ? 'Modifica prenotazione' : 'Nuova prenotazione';
 $htmlFormPren  = "<form method='post' class='admin-form'>";
 $htmlFormPren .= "<input type='hidden' name='id_prenotazione' value='" . ($prenotazioneDaModificare['id'] ?? '') . "'>";
@@ -171,14 +166,37 @@ $htmlFormPren .= "<input type='date' name='data_prenotazione' required value='" 
 $htmlFormPren .= "<input type='time' name='ora_prenotazione' required value='" . ($prenotazioneDaModificare['ora'] ?? '') . "'>";
 $htmlFormPren .= "<input type='number' name='persone' placeholder='Persone' min='1' required value='" . ($prenotazioneDaModificare['persone'] ?? '') . "'>";
 $htmlFormPren .= "<textarea name='note' placeholder='Note'>" . htmlspecialchars($prenotazioneDaModificare['note'] ?? '') . "</textarea>";
-$htmlFormPren .= "<select name='id_tavolo'><option value=''>-- Tavolo (opzionale) --</option>";
+$htmlFormPren .= "<select name='id_tavolo'>";
+$htmlFormPren .= "<option value=''>-- Tavolo (opzionale) --</option>";
 foreach ($tavoli as $t) {
-    $sel = ($prenotazioneDaModificare['tavoli_id'] ?? '') == $t['id'] ? 'selected' : '';
-    $htmlFormPren .= "<option value='{$t['id']}' $sel>Tavolo {$t['numero']} ({$t['stato']})</option>";
+    $isTavoloCorrente = $idTavoloAssegnato && $t['id'] == $idTavoloAssegnato;
+    if ($t['stato'] !== 'libero' && !$isTavoloCorrente) continue;
+    $sel = $isTavoloCorrente ? 'selected' : '';
+    $label = $isTavoloCorrente ? "Tavolo {$t['numero']} (assegnato)" : "Tavolo {$t['numero']} — max {$t['capacita_max']} posti";
+    $htmlFormPren .= "<option value='{$t['id']}' $sel>{$label}</option>";
 }
 $htmlFormPren .= "</select>";
 $htmlFormPren .= "<button type='submit' name='salva_prenotazione' class='btn-primary'>$titolo</button>";
 $htmlFormPren .= "</form>";
+
+$htmlTavoliVista = "";
+foreach ($tavoli as $tv) {
+    $stato = $tv['stato'];
+    $htmlTavoliVista .= "<div class='tavolo-sala-card {$stato}'>";
+    $htmlTavoliVista .= "<div class='tavolo-sala-numero'>" . $tv['numero'] . "</div>";
+    $htmlTavoliVista .= "<div class='tavolo-sala-info'>👥 max " . $tv['capacita_max'] . " — " . htmlspecialchars($tv['posizione'] ?? '-') . "</div>";
+    $htmlTavoliVista .= "<div class='tavolo-sala-stato'>" . ucfirst($stato) . "</div>";
+    $htmlTavoliVista .= "<form method='post'>";
+    $htmlTavoliVista .= "<input type='hidden' name='id_tavolo_stato' value='{$tv['id']}'>";
+    $labelMap = ['libero' => '✓ Libero', 'occupato' => '● Occupato', 'prenotato' => '◷ Prenotato'];
+    $classMap  = ['libero' => 'btn-secondary', 'occupato' => 'btn-primary', 'prenotato' => 'btn-secondary'];
+    foreach (['libero', 'occupato', 'prenotato'] as $s) {
+        if ($s === $stato) continue;
+        $htmlTavoliVista .= "<button type='submit' name='set_stato_tavolo' class='{$classMap[$s]} btn-sm' value='{$s}'>{$labelMap[$s]}</button>";
+        $htmlTavoliVista .= "<input type='hidden' name='nuovo_stato_tavolo' value='{$s}'>";
+    }
+    $htmlTavoliVista .= "</form></div>";
+}
 
 $tabAttiva = $_GET['tab'] ?? 'ordini';
 
@@ -193,6 +211,7 @@ $t->setContent("ordini_pronti", $htmlOrdiniPronti);
 $t->setContent("prenotazioni", $htmlPrenotazioni);
 $t->setContent("form_prenotazione", $htmlFormPren);
 $t->setContent("titolo_form_prenotazione", $titolo);
+$t->setContent("tavoli_vista", $htmlTavoliVista);
 $t->setContent("tab_attiva", $tabAttiva);
 $t->close();
 ?>

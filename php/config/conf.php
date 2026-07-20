@@ -8,12 +8,12 @@ $db_user    = 'root';
 $db_charset = 'utf8mb4';
 
 // MAMP
-$db_pass = 'root';
-$db_port = '8889';
+//$db_pass = 'root';
+//$db_port = '8889';
 
 // XAMPP
-// $db_pass = '';
-// $db_port = '3306';
+$db_pass = '';
+$db_port = '3306';
 
 $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset={$db_charset}";
 $options = [
