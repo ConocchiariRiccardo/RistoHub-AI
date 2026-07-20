@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Cameriere — RistoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <script src="../js/cameriere.js" defer></script>
+</head>
+<body class="admin-body">
+
+<header class="admin-header">
+  <div class="admin-header-inner">
+    <div class="logo">RistoHub <span>Cameriere</span></div>
+    <div class="admin-user">
+      🍽️ <[nome_cameriere]>
+      <select id="select-tavolo" onchange="vaiAlTavolo(this)" style="margin-left:12px; padding:6px 10px; border-radius:6px; border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; font-size:.85rem;">
+        <option value="">Seleziona tavolo</option>
+        <[select_tavoli]>
+      </select>
+      <a href="./logout.php" class="btn-logout">Logout</a>
+    </div>
+  </div>
+</header>
+
+<!-- Notifiche ordini pronti -->
+<[ordini_pronti]>
+
+<div class="admin-layout">
+
+  <nav class="admin-sidebar">
+    <ul>
+      <li><a href="?tab=ordini" data-tab="ordini">📋 Ordini</a></li>
+      <li><a href="?tab=sala" data-tab="sala">🪑 Gestione Sala</a></li>
+    </ul>
+  </nav>
+
+  <main class="admin-main">
+
+    <!-- TAB ORDINI -->
+    <div id="ordini" class="admin-section">
+      <div class="waiter-layout">
+
+        <!-- MENU -->
+        <section class="menu-panel">
+          <h2>Menu</h2>
+          <div id="menu-list">
+            <[menu]>
+          </div>
+        </section>
+
+        <!-- RIEPILOGO ORDINE -->
+        <aside class="order-panel">
+          <header class="order-header">
+            <h2>Ordine — Tavolo <[id_tavolo]></h2>
+          </header>
+
+          <ul class="order-items" id="order-items">
+            <[ordine_items]>
+          </ul>
+
+          <div class="form-group" style="margin-top:16px;">
+            <label for="note-cucina">Note per la cucina</label>
+            <textarea id="note-cucina" rows="2" placeholder="Es. senza sale..."></textarea>
+          </div>
+
+          <div class="order-footer">
+            <div class="order-total">
+              <span>Totale stimato</span>
+              <strong id="order-total">0,00 €</strong>
+            </div>
+            <div class="order-actions">
+              <button type="button" class="btn-secondary" id="btn-svuota">Svuota</button>
+              <button type="button" class="btn-primary" id="btn-invia">Invia in cucina</button>
+            </div>
+            <form method="post" id="form-chiudi-ordine" style="margin-top:12px;">
+              <input type="hidden" name="id_tavolo_chiusura" value="<[id_tavolo]>">
+              <input type="hidden" name="totale_finale" id="input-totale-finale" value="0">
+              <button type="submit" name="chiudi_ordine" class="btn-primary btn-full"
+                      onclick="preparaChiusura(event)">
+                Chiudi ordine e incassa
+              </button>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- TAB SALA -->
+    <div id="sala" class="admin-section">
+      <h2>🪑 Gestione Sala</h2>
+
+      <div class="waiter-sala-layout">
+
+        <!-- LISTA PRENOTAZIONI -->
+        <section>
+          <h3 style="margin-bottom:16px;">Prenotazioni</h3>
+          <div id="prenotazioni-list">
+            <[prenotazioni]>
+          </div>
+        </section>
+
+        <!-- FORM PRENOTAZIONE -->
+        <aside>
+          <h3 style="margin-bottom:16px;"><[titolo_form_prenotazione]></h3>
+          <[form_prenotazione]>
+        </aside>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
