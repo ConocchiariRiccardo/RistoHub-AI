@@ -46,6 +46,41 @@
         <a href="./recensione.php" class="btn-secondary">⭐ Scrivi recensione</a>
       </div>
 
+      <!-- LOYALTY & COUPON -->
+      <div class="section-header" style="margin-top:3rem;">
+        <h2 class="section-title">🎁 Programma Fedeltà</h2>
+      </div>
+
+      <[msg_coupon]>
+
+      <div class="loyalty-grid">
+
+        <div class="loyalty-card">
+          <h3 class="loyalty-title">I tuoi punti</h3>
+          <div class="loyalty-punti-big"><[punti_attuali]></div>
+          <p class="loyalty-sub">punti accumulati</p>
+
+          <div class="soglie-list">
+            <[soglie]>
+          </div>
+
+          <form method="post" style="margin-top:20px;">
+            <button type="submit" name="genera_coupon" class="btn-primary btn-full">
+              🎟️ Genera coupon sconto
+            </button>
+          </form>
+          <p class="loyalty-note">Il coupon scala i punti della soglia raggiunta più alta.</p>
+        </div>
+
+        <div class="loyalty-card">
+          <h3 class="loyalty-title">I miei coupon</h3>
+          <div class="coupon-grid">
+            <[coupon_list]>
+          </div>
+        </div>
+
+      </div>
+
       <!-- Prenotazioni -->
       <div class="section-header" style="margin-top:3rem;">
         <h2 class="section-title">Le mie prenotazioni</h2>

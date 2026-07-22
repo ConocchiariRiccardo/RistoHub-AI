@@ -1096,3 +1096,122 @@ textarea { resize: vertical; min-height: 100px; }
     background: var(--cream);
     border-radius: var(--radius-sm);
 }
+
+.loyalty-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.loyalty-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(232,220,203,.95);
+}
+
+.loyalty-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--ink);
+    margin-bottom: 16px;
+}
+
+.loyalty-punti-big {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.loyalty-sub {
+    font-size: .8rem;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+}
+
+.soglie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.soglia-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    font-size: .875rem;
+    color: var(--ink-soft);
+}
+
+.soglia-raggiunta {
+    border-color: rgba(95,158,160,.4);
+    background: rgba(95,158,160,.06);
+    color: var(--ink);
+}
+
+.soglia-punti { font-weight: 700; }
+.soglia-sconto { color: var(--gold); font-weight: 700; }
+.soglia-status { font-size: .75rem; font-weight: 600; color: var(--green); }
+.soglia-locked { color: var(--ink-soft); }
+
+.loyalty-note {
+    font-size: .75rem;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+.coupon-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.coupon-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    border: 2px dashed rgba(95,158,160,.4);
+    background: rgba(95,158,160,.05);
+}
+
+.coupon-usato {
+    border-color: var(--border);
+    background: rgba(0,0,0,.03);
+    opacity: .55;
+}
+
+.coupon-codice {
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: .08em;
+}
+
+.coupon-sconto {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--gold);
+}
+
+.coupon-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ink-soft);
+}
+
+@media (max-width: 700px) {
+    .loyalty-grid { grid-template-columns: 1fr; }
+}

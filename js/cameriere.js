@@ -181,9 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function aggiornaTotal() {
         const tot = Object.values(ordine).reduce((s, p) => s + p.price * p.qty, 0);
-        if (orderTotalEl) orderTotalEl.textContent = fmt(tot) + ' €';
+        const scontato = scontoAttivo > 0 ? tot * (1 - scontoAttivo / 100) : tot;
+        if (orderTotalEl) orderTotalEl.textContent = fmt(scontato) + ' €';
         const input = document.getElementById('input-totale-finale');
-        if (input) input.value = tot.toFixed(2);
+        if (input) input.value = scontato.toFixed(2);
     }
 
     function fmt(n) { return n.toFixed(2).replace('.', ','); }
@@ -207,4 +208,33 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { t.style.opacity = '0'; }, 2800);
         setTimeout(() => t.remove(), 3200);
     }
+
+    const btnVerifica = document.getElementById('btn-verifica-coupon');
+    const feedbackEl  = document.getElementById('coupon-feedback');
+    const inputCoupon = document.getElementById('codice-coupon');
+
+    let scontoAttivo = 0;
+
+    btnVerifica?.addEventListener('click', () => {
+        const codice = inputCoupon?.value.trim().toUpperCase();
+        if (!codice) { feedbackEl.textContent = 'Inserisci un codice.'; feedbackEl.style.color = '#8E3D2D'; return; }
+
+        fetch(`verifica_coupon.php?codice=${encodeURIComponent(codice)}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.valido) {
+                    scontoAttivo = data.sconto;
+                    feedbackEl.textContent = `✅ Coupon valido: -${data.sconto}% applicato.`;
+                    feedbackEl.style.color = '#35686A';
+                    aggiornaTotal();
+                } else {
+                    scontoAttivo = 0;
+                    feedbackEl.textContent = '❌ Coupon non valido o già usato.';
+                    feedbackEl.style.color = '#8E3D2D';
+                    aggiornaTotal();
+                }
+            })
+            .catch(() => { feedbackEl.textContent = 'Errore di rete.'; });
+    });
 });
+

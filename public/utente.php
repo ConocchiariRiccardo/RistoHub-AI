@@ -8,8 +8,27 @@ require_once '../php/config/conf.php';
 require_once '../php/class/Prenotazione.php';
 require_once '../php/class/Recensione.php';
 require_once '../php/includes/auth.php';
+require_once '../php/class/Coupon.php';
+
 
 requireRuolo('cliente');
+
+$couponObj = new Coupon();
+$msgCoupon = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genera_coupon'])) {
+    $puntiAttuali = $_SESSION['punti'] ?? 0;
+    $risultato = $couponObj->generaCoupon(getUserId(), $puntiAttuali);
+    if ($risultato) {
+        $_SESSION['punti'] -= $risultato['punti_scalati'];
+        $msgCoupon = "<p class='msg-successo'>🎉 Coupon generato: <strong>" . $risultato['codice'] . "</strong> — {$risultato['sconto']}% di sconto! Hai usato {$risultato['punti_scalati']} punti.</p>";
+    } else {
+        $msgCoupon = "<p class='msg-errore'>Punti insufficienti. Servono almeno 100 punti.</p>";
+    }
+}
+
+$mieiCoupon = $couponObj->getCouponUtente(getUserId());
+
 
 $prenotazioneObj = new Prenotazione();
 $recensioneObj   = new Recensione();
@@ -43,6 +62,34 @@ if (!empty($miePrenotazioni)) {
     $htmlPrenotazioni = "<p class='empty-msg'>Non hai ancora effettuato prenotazioni.</p>";
 }
 
+$soglie = [500 => '20%', 200 => '10%', 100 => '5%'];
+$puntiSessione = $_SESSION['punti'] ?? 0;
+
+$htmlSoglie = '';
+foreach ($soglie as $pt => $sconto) {
+    $raggiunto = $puntiSessione >= $pt;
+    $htmlSoglie .= "<div class='soglia-item" . ($raggiunto ? ' soglia-raggiunta' : '') . "'>";
+    $htmlSoglie .= "<span class='soglia-punti'>{$pt} pt</span>";
+    $htmlSoglie .= "<span class='soglia-sconto'>{$sconto} sconto</span>";
+    $htmlSoglie .= $raggiunto ? "<span class='soglia-status'>✓ Disponibile</span>" : "<span class='soglia-status soglia-locked'>🔒</span>";
+    $htmlSoglie .= "</div>";
+}
+
+$htmlCoupon = '';
+if (!empty($mieiCoupon)) {
+    foreach ($mieiCoupon as $c) {
+        $usato = $c['usato'] ? 'coupon-usato' : 'coupon-attivo';
+        $label = $c['usato'] ? 'Usato' : 'Attivo';
+        $htmlCoupon .= "<div class='coupon-card {$usato}'>";
+        $htmlCoupon .= "<div class='coupon-codice'>{$c['codice']}</div>";
+        $htmlCoupon .= "<div class='coupon-sconto'>{$c['sconto_percentuale']}% OFF</div>";
+        $htmlCoupon .= "<div class='coupon-label'>{$label}</div>";
+        $htmlCoupon .= "</div>";
+    }
+} else {
+    $htmlCoupon = "<p class='empty-msg'>Nessun coupon generato ancora.</p>";
+}
+
 $t = new Template("../templates/utente");
 $t->setContent("nome", htmlspecialchars($_SESSION['nome']));
 $t->setContent("cognome", htmlspecialchars($_SESSION['cognome']));
@@ -50,5 +97,9 @@ $t->setContent("email", htmlspecialchars($_SESSION['email']));
 $t->setContent("username", htmlspecialchars($_SESSION['username']));
 $t->setContent("punti", htmlspecialchars($_SESSION['punti'] ?? 0));
 $t->setContent("prenotazioni", $htmlPrenotazioni);
+$t->setContent("msg_coupon", $msgCoupon);
+$t->setContent("soglie", $htmlSoglie);
+$t->setContent("coupon_list", $htmlCoupon);
+$t->setContent("punti_attuali", $puntiSessione);
 $t->close();
 ?>

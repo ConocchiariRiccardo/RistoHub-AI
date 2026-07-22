@@ -283,9 +283,16 @@ foreach ($ordini as $o) {
     $htmlOrdini .= "<div><form method='post' style='display:flex;gap:8px;align-items:center'>";
     $htmlOrdini .= "<input type='hidden' name='id_ordine' value='" . $o['id'] . "'>";
     $htmlOrdini .= "<select name='stato_ordine'>";
-    foreach (['inviato', 'in_preparazione', 'pronto', 'completato'] as $s) {
-        $sel = $o['stato'] === $s ? 'selected' : '';
-        $htmlOrdini .= "<option value='$s' $sel>" . $s . "</option>";
+    $statiOrdine = [
+        'inviato'         => '🆕 Inviato',
+        'in_preparazione' => '👨‍🍳 In preparazione',
+        'pronto'          => '✅ Pronto',
+        'completato'      => '🏁 Completato',
+    ];
+
+    foreach ($statiOrdine as $valore => $etichetta) {
+        $sel = $o['stato'] === $valore ? 'selected' : '';
+        $htmlOrdini .= "<option value='$valore' $sel>$etichetta</option>";
     }
     $htmlOrdini .= "</select>";
     $htmlOrdini .= "<button type='submit' name='cambia_stato_ordine' class='btn-primary btn-sm'>Aggiorna</button>";

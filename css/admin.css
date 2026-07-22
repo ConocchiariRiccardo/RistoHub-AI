@@ -69,8 +69,8 @@
     padding: 20px 0;
     flex-shrink: 0;
     position: sticky;
-    top: 68px;
-    height: calc(100vh - 68px);
+    top: 0;
+    height: 100%;
     overflow-y: auto;
     backdrop-filter: blur(14px);
 }
@@ -215,8 +215,7 @@
 .table-row form { display: flex; gap: 8px; }
 
 .ordine-row, .prenotazione-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    display: flex;
     gap: 12px;
     padding: 12px 16px;
     border-bottom: 1px solid rgba(232,220,203,.95);
@@ -224,6 +223,15 @@
     font-size: .875rem;
     color: var(--ink);
 }
+
+.ordine-row div{
+    min-width: 25%;
+}
+
+.ordine-row div:nth-child(2){
+    min-width: 10%;
+}
+
 .ordine-row:hover, .prenotazione-row:hover { background: rgba(95,158,160,.04); }
 
 /* ── WAITER LAYOUT ── */

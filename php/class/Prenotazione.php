@@ -103,12 +103,20 @@ class Prenotazione {
 
     // Assegna tavolo a prenotazione
     public function assegnaTavolo(int $id, int $tavoliId): bool {
+        $prenotazione = $this->getPrenotazione($id);
+        if ($prenotazione && $prenotazione['tavoli_id'] && $prenotazione['tavoli_id'] !== $tavoliId) {
+            $stmtLibera = $this->pdo->prepare("UPDATE tavoli SET stato = 'libero' WHERE id = ?");
+            $stmtLibera->execute([$prenotazione['tavoli_id']]);
+        }
+
         $stmt = $this->pdo->prepare("UPDATE prenotazioni SET tavoli_id = ?, stato = 'confermata' WHERE id = ?");
         $ok = $stmt->execute([$tavoliId, $id]);
+
         if ($ok) {
             $stmtT = $this->pdo->prepare("UPDATE tavoli SET stato = 'prenotato' WHERE id = ?");
             $stmtT->execute([$tavoliId]);
         }
+
         return $ok;
     }
 

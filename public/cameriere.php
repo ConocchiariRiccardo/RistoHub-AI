@@ -10,6 +10,7 @@ require_once '../php/class/Ordine.php';
 require_once '../php/class/Piatto.php';
 require_once '../php/class/Prenotazione.php';
 require_once '../php/includes/auth.php';
+require_once '../php/class/Coupon.php';
 
 requireAccesso('cameriere.php');
 
@@ -46,7 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: " . $_SERVER['PHP_SELF'] . "?tab=tavoli_vista"); exit;
 
     } elseif (isset($_POST['assegna_tavolo'])) {
-        $prenotazioneObj->assegnaTavolo(intval($_POST['id_prenotazione']), intval($_POST['id_tavolo_assegna']));
+        $idPrenotazione = intval($_POST['id_prenotazione']);
+        $idTavoloAssegna = intval($_POST['id_tavolo_assegna'] ?? 0);
+        if ($idPrenotazione && $idTavoloAssegna) {
+            $prenotazioneObj->assegnaTavolo($idPrenotazione, $idTavoloAssegna);
+            $tavoloObj->setStato($idTavoloAssegna, 'prenotato');
+        }
         header("Location: " . $_SERVER['PHP_SELF'] . "?tab=sala"); exit;
 
     } elseif (isset($_POST['elimina_prenotazione'])) {
@@ -77,8 +83,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['chiudi_ordine'])) {
         $idTavoloChiusura = intval($_POST['id_tavolo_chiusura']);
         $totale           = floatval($_POST['totale_finale']);
+        $codiceCoupon     = strtoupper(trim($_POST['codice_coupon'] ?? ''));
         $ordineAttivo     = $ordineObj->getOrdineAttivoByTavolo($idTavoloChiusura);
+
         if ($ordineAttivo) {
+            $couponObj = new Coupon();
+
+            if ($codiceCoupon) {
+                $coupon = $couponObj->getCouponValido($codiceCoupon);
+                if ($coupon) {
+                    $couponObj->usaCoupon($codiceCoupon, $coupon['users_id']);
+                }
+            }
+
             $ordineObj->chiudiOrdine($ordineAttivo['id'], $totale);
             $tavoloObj->setStato($idTavoloChiusura, 'libero');
         }
@@ -136,22 +153,27 @@ foreach ($prenotazioni as $p) {
     $htmlPrenotazioni .= "<span class='badge badge-blue' style='margin-left:8px'>" . $p['stato'] . "</span>";
     $htmlPrenotazioni .= "</div>";
     $htmlPrenotazioni .= "<div class='pren-actions'>";
-    $htmlPrenotazioni .= "<div class='dropdown-container'>";
-    $htmlPrenotazioni .= "<button type='button' class='btn-secondary btn-sm dropdown-toggle' onclick='toggleDropdown(\"drop_{$p['id']}\")'>Assegna tavolo ▾</button>";
-    $htmlPrenotazioni .= "<div class='dropdown-menu' id='drop_{$p['id']}' style='display:none'>";
-    $htmlPrenotazioni .= "<form method='post'>";
+
+    // Form assegna tavolo con select
+    $htmlPrenotazioni .= "<form method='post' style='display:flex;gap:8px;align-items:center;'>";
     $htmlPrenotazioni .= "<input type='hidden' name='id_prenotazione' value='{$p['id']}'>";
+    $htmlPrenotazioni .= "<select name='id_tavolo_assegna' style='padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:.85rem;'>";
+    $htmlPrenotazioni .= "<option value=''>-- Tavolo --</option>";
     foreach ($tavoli as $t) {
         if ($t['stato'] !== 'libero') continue;
-        $htmlPrenotazioni .= "<button type='submit' name='assegna_tavolo' class='dropdown-item'>Tavolo {$t['numero']}</button>";
-        $htmlPrenotazioni .= "<input type='hidden' name='id_tavolo_assegna' value='{$t['id']}'>";
+        $htmlPrenotazioni .= "<option value='{$t['id']}'>Tavolo {$t['numero']} (max {$t['capacita_max']})</option>";
     }
-    $htmlPrenotazioni .= "</form></div></div>";
-    $htmlPrenotazioni .= "<form method='post' style='display:inline'>";
+    $htmlPrenotazioni .= "</select>";
+    $htmlPrenotazioni .= "<button type='submit' name='assegna_tavolo' class='btn-primary btn-sm'>Assegna</button>";
+    $htmlPrenotazioni .= "</form>";
+
+    // Form modifica ed elimina
+    $htmlPrenotazioni .= "<form method='post' style='display:flex;gap:8px;'>";
     $htmlPrenotazioni .= "<input type='hidden' name='id_prenotazione' value='{$p['id']}'>";
     $htmlPrenotazioni .= "<button type='button' class='btn-secondary btn-sm' onclick=\"modificaPrenotazione({$p['id']})\">Modifica</button>";
     $htmlPrenotazioni .= "<button type='submit' name='elimina_prenotazione' class='btn-primary btn-sm' onclick=\"return confirm('Eliminare?')\">Elimina</button>";
     $htmlPrenotazioni .= "</form>";
+
     $htmlPrenotazioni .= "</div></div>";
 }
 

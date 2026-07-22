@@ -79,6 +79,18 @@
             <form method="post" id="form-chiudi-ordine" style="margin-top:12px;">
               <input type="hidden" name="id_tavolo_chiusura" value="<[id_tavolo]>">
               <input type="hidden" name="totale_finale" id="input-totale-finale" value="0">
+              <div class="form-group" style="margin-bottom:10px;">
+                <label for="codice-coupon">Coupon sconto (opzionale)</label>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" id="codice-coupon" name="codice_coupon"
+                         placeholder="Es. RH-AB12CD34"
+                         style="text-transform:uppercase;letter-spacing:.05em;">
+                  <button type="button" id="btn-verifica-coupon" class="btn-secondary btn-sm">
+                    Verifica
+                  </button>
+                </div>
+                <div id="coupon-feedback" style="font-size:.8rem;margin-top:6px;"></div>
+              </div>
               <button type="submit" name="chiudi_ordine" class="btn-primary btn-full"
                       onclick="preparaChiusura(event)">
                 Chiudi ordine e incassa
