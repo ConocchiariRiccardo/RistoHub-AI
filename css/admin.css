@@ -1,5 +1,5 @@
 .admin-body {
-    background: linear-gradient(180deg, #F8F2E8 0%, #F1E4D0 100%);
+    background: linear-gradient(180deg, #F5F5DC 0%, #EFE7CE 100%);
     color: var(--ink);
 }
 
@@ -10,7 +10,7 @@
 }
 
 .admin-header {
-    background: linear-gradient(135deg, #173429 0%, #10251D 100%);
+    background: linear-gradient(135deg, var(--green) 0%, #8FA07A 100%);
     color: #fff;
     height: 68px;
     display: flex;
@@ -19,7 +19,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 14px 36px rgba(23,52,41,.14);
+    box-shadow: 0 14px 36px rgba(44,44,44,.14);
     border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
@@ -87,7 +87,7 @@
     border-left: 3px solid transparent;
 }
 .admin-sidebar a:hover, .admin-sidebar a.active {
-    background: rgba(23,52,41,.08);
+    background: rgba(95,158,160,.08);
     color: var(--green);
     border-left-color: var(--green);
 }
@@ -178,14 +178,14 @@
 }
 
 .alert-box {
-    background: rgba(184,94,69,.08);
-    border: 1px solid rgba(184,94,69,.22);
+    background: rgba(95,158,160,.08);
+    border: 1px solid rgba(95,158,160,.22);
     border-radius: 24px;
     padding: 20px 24px;
     margin-top: 16px;
     color: var(--ink);
 }
-.alert-box h3 { font-size: .95rem; font-weight: 700; color: #B85E45; margin-bottom: 10px; }
+.alert-box h3 { font-size: .95rem; font-weight: 700; color: #4E8688; margin-bottom: 10px; }
 .alert-box ul { list-style: none; font-size: .85rem; color: var(--ink-soft); display: flex; flex-direction: column; gap: 4px; }
 
 /* ── TAVOLI ADMIN ── */
@@ -209,9 +209,9 @@
 .magazzino-table .table-header,
 .magazzino-table .table-row { grid-template-columns: 1.5fr .8fr .8fr .8fr 1fr; }
 
-.table-header { background: rgba(23,52,41,.05); font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--green); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.table-header { background: rgba(229,228,226,.9); font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--green); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 
-.table-row:hover { background: rgba(23,52,41,.04); }
+.table-row:hover { background: rgba(95,158,160,.04); }
 .table-row form { display: flex; gap: 8px; }
 
 .ordine-row, .prenotazione-row {
@@ -224,7 +224,7 @@
     font-size: .875rem;
     color: var(--ink);
 }
-.ordine-row:hover, .prenotazione-row:hover { background: rgba(23,52,41,.04); }
+.ordine-row:hover, .prenotazione-row:hover { background: rgba(95,158,160,.04); }
 
 /* ── WAITER LAYOUT ── */
 .waiter-layout {
@@ -284,7 +284,7 @@
     transition: border-color var(--transition), background var(--transition), transform var(--transition);
     gap: 10px;
 }
-.dish:hover { border-color: rgba(184,94,69,.4); background: rgba(184,94,69,.08); transform: translateY(-2px); }
+.dish:hover { border-color: rgba(95,158,160,.4); background: rgba(95,158,160,.08); transform: translateY(-2px); }
 
 .dish-name { font-size: .875rem; font-weight: 600; color: var(--ink); flex: 1; }
 .dish-price { font-size: .8rem; color: var(--gold); font-weight: 700; white-space: nowrap; }
@@ -324,7 +324,7 @@
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    background: rgba(23,52,41,.05);
+    background: rgba(95,158,160,.05);
     border-radius: 16px;
     font-size: .875rem;
 }
@@ -348,7 +348,7 @@
 .qty-controls button:hover { background: linear-gradient(135deg, var(--green) 0%, #204536 100%); border-color: transparent; color: #fff; }
 .qty { font-weight: 700; min-width: 20px; text-align: center; }
 
-.order-footer { border-top: 1px solid rgba(232,220,203,.95); padding-top: 16px; }
+.order-footer { border-top: 1px solid rgba(229,228,226,.95); padding-top: 16px; }
 
 .order-total {
     display: flex;
@@ -364,8 +364,8 @@
 
 /* ── ORDINI PRONTI BADGE ── */
 .ordine-pronto-badge {
-    background: rgba(23,52,41,.08);
-    border: 1px solid rgba(23,52,41,.18);
+    background: rgba(156,175,136,.14);
+    border: 1px solid rgba(156,175,136,.28);
     color: var(--green);
     padding: 10px 20px;
     font-size: .875rem;
@@ -422,7 +422,7 @@
     transition: background var(--transition);
     width: 100%;
 }
-.dropdown-item:hover { background: rgba(184,94,69,.08); color: #B85E45; }
+.dropdown-item:hover { background: rgba(95,158,160,.08); color: #4E8688; }
 
 /* ── KANBAN CUOCO ── */
 .kanban-board {
@@ -450,7 +450,7 @@
     color: var(--green);
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid rgba(23,52,41,.18);
+    border-bottom: 2px solid rgba(95,158,160,.18);
 }
 
 .kanban-count {
@@ -467,7 +467,7 @@
 }
 
 .kanban-card {
-    background: rgba(23,52,41,.04);
+    background: rgba(95,158,160,.04);
     border-radius: 18px;
     padding: 14px;
     margin-bottom: 12px;
@@ -491,7 +491,7 @@
     font-style: italic;
     margin-bottom: 8px;
     padding: 6px 10px;
-    background: rgba(184,94,69,.08);
+    background: rgba(95,158,160,.08);
     border-radius: var(--radius-sm);
 }
 
@@ -543,7 +543,7 @@
     box-shadow: var(--shadow);
     text-align: center;
     border: 1px solid rgba(232,220,203,.95);
-    border-top: 4px solid rgba(23,52,41,.14);
+    border-top: 4px solid rgba(95,158,160,.14);
     transition: box-shadow var(--transition);
 }
 .tavolo-sala-card.libero   { border-top-color: var(--green); }
