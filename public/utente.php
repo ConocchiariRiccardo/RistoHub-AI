@@ -18,12 +18,13 @@ $msgCoupon = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genera_coupon'])) {
     $puntiAttuali = $_SESSION['punti'] ?? 0;
-    $risultato = $couponObj->generaCoupon(getUserId(), $puntiAttuali);
+    $puntiScelti  = intval($_POST['soglia_scelta'] ?? 0);
+    $risultato = $couponObj->generaCoupon(getUserId(), $puntiAttuali, $puntiScelti);
     if ($risultato) {
         $_SESSION['punti'] -= $risultato['punti_scalati'];
         $msgCoupon = "<p class='msg-successo'>🎉 Coupon generato: <strong>" . $risultato['codice'] . "</strong> — {$risultato['sconto']}% di sconto! Hai usato {$risultato['punti_scalati']} punti.</p>";
     } else {
-        $msgCoupon = "<p class='msg-errore'>Punti insufficienti. Servono almeno 100 punti.</p>";
+        $msgCoupon = "<p class='msg-errore'>Punti insufficienti o soglia non valida.</p>";
     }
 }
 
@@ -65,15 +66,27 @@ if (!empty($miePrenotazioni)) {
 $soglie = [500 => '20%', 200 => '10%', 100 => '5%'];
 $puntiSessione = $_SESSION['punti'] ?? 0;
 
-$htmlSoglie = '';
+$htmlSoglie = "<form method='post'>";
 foreach ($soglie as $pt => $sconto) {
     $raggiunto = $puntiSessione >= $pt;
-    $htmlSoglie .= "<div class='soglia-item" . ($raggiunto ? ' soglia-raggiunta' : '') . "'>";
-    $htmlSoglie .= "<span class='soglia-punti'>{$pt} pt</span>";
-    $htmlSoglie .= "<span class='soglia-sconto'>{$sconto} sconto</span>";
-    $htmlSoglie .= $raggiunto ? "<span class='soglia-status'>✓ Disponibile</span>" : "<span class='soglia-status soglia-locked'>🔒</span>";
-    $htmlSoglie .= "</div>";
+    $disabled  = $raggiunto ? '' : 'disabled';
+    $style     = $raggiunto ? 'cursor:pointer;' : 'opacity:.45; cursor:not-allowed;';
+    $htmlSoglie .= "
+    <label style='display:flex; align-items:center; gap:12px; padding:12px 16px;
+                  border:1.5px solid var(--border); border-radius:var(--radius-sm);
+                  margin-bottom:8px; {$style}'>
+        <input type='radio' name='soglia_scelta' value='{$pt}' {$disabled}>
+        <span class='soglia-punti'>{$pt} pt</span>
+        <span class='soglia-sconto'>{$sconto} sconto</span>
+        " . ($raggiunto ? "<span class='soglia-status'>✓ Disponibile</span>" : "<span class='soglia-status soglia-locked'>🔒</span>") . "
+    </label>";
 }
+$htmlSoglie .= "
+    <button type='submit' name='genera_coupon' class='btn-primary' style='margin-top:8px;'
+            onclick=\"return confirm('Confermi il riscatto?')\">
+        Genera coupon selezionato
+    </button>
+</form>";
 
 $htmlCoupon = '';
 if (!empty($mieiCoupon)) {

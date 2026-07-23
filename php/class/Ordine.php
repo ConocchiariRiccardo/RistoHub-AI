@@ -130,19 +130,17 @@ class Ordine {
     }
 
     // Chiudi ordine e aggiungi punti loyalty
-    public function chiudiOrdine(int $id, float $totale): bool {
-        $stmt = $this->pdo->prepare("
-            UPDATE ordini SET stato = 'completato', totale = ? WHERE id = ?
-        ");
+    public function chiudiOrdine(int $id, float $totale, float $totalePerPunti = 0): bool {
+        $stmt = $this->pdo->prepare("UPDATE ordini SET stato = 'completato', totale = ? WHERE id = ?");
         $ok = $stmt->execute([$totale, $id]);
 
         if ($ok) {
-            // Aggiungi punti loyalty (1 punto ogni euro speso)
             $stmtO = $this->pdo->prepare("SELECT users_id FROM ordini WHERE id = ?");
             $stmtO->execute([$id]);
             $ordine = $stmtO->fetch();
             if ($ordine && $ordine['users_id']) {
-                $punti = (int)floor($totale);
+                $base = $totalePerPunti > 0 ? $totalePerPunti : $totale;
+                $punti = (int)floor($base);
                 $stmtP = $this->pdo->prepare("UPDATE users SET punti_loyalty = punti_loyalty + ? WHERE id = ?");
                 $stmtP->execute([$punti, $ordine['users_id']]);
             }

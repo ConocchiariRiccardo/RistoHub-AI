@@ -1,5 +1,3 @@
-// ── Funzioni globali ──────────────────────────────────────────────────────────
-
 window.vaiAlTavolo = function(sel) {
     if (sel.value) window.location.href = `cameriere.php?tavolo=${sel.value}&tab=ordini`;
 };
@@ -27,17 +25,13 @@ window.modificaPrenotazione = function(id) {
     window.location.href = `cameriere.php?modifica_id=${id}&tab=sala`;
 };
 
-// ── Logica principale ─────────────────────────────────────────────────────────
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ── Sidebar navigation ────────────────────────────────────────────────────
     const currentTab = new URLSearchParams(location.search).get('tab') || 'ordini';
 
     document.querySelectorAll('.admin-sidebar a').forEach(link => {
         const tab = link.getAttribute('data-tab');
         if (tab === currentTab) link.classList.add('active');
-
         link.addEventListener('click', e => {
             e.preventDefault();
             const target = link.getAttribute('data-tab');
@@ -56,15 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showSection(currentTab);
 
-    // ── Chiudi dropdown cliccando fuori ───────────────────────────────────────
     document.addEventListener('click', e => {
         if (!e.target.closest('.dropdown-container')) {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
         }
     });
 
-    // ── Stato ordine in memoria ───────────────────────────────────────────────
-    const ordine = {};
+    const ordine       = {};
+    let scontoAttivo   = 0;
 
     const orderItemsUl = document.getElementById('order-items');
     const orderTotalEl = document.getElementById('order-total');
@@ -72,91 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSvuota    = document.getElementById('btn-svuota');
     const noteCucina   = document.getElementById('note-cucina');
 
-    // Inizializza da piatti già presenti (ordine attivo dal PHP)
-    document.querySelectorAll('#order-items .order-item').forEach(li => {
-        const id    = li.dataset.id;
-        const price = parseFloat(li.dataset.price);
-        const qty   = parseInt(li.querySelector('.qty')?.textContent ?? '1', 10);
-        const title = li.querySelector('.order-item-name')?.textContent?.trim() ?? '';
-        if (id && price >= 0) ordine[id] = { title, price, qty };
-    });
-    aggiornaTotal();
+    function fmt(n) { return n.toFixed(2).replace('.', ','); }
 
-    // ── Aggiunta piatti dal menu ──────────────────────────────────────────────
-    document.querySelectorAll('.dish-add').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const li    = btn.closest('.dish');
-            const id    = li.dataset.id;
-            const price = parseFloat(li.dataset.price);
-            const title = li.dataset.title;
-            if (ordine[id]) ordine[id].qty++;
-            else ordine[id] = { title, price, qty: 1 };
-            renderOrdine();
-        });
-    });
+    function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
-    // ── Controlli quantità (delega) ───────────────────────────────────────────
-    orderItemsUl?.addEventListener('click', e => {
-        const item = e.target.closest('.order-item');
-        if (!item) return;
-        const id = item.dataset.id;
-        if (e.target.classList.contains('qty-plus')) {
-            ordine[id].qty++;
-        } else if (e.target.classList.contains('qty-minus')) {
-            ordine[id].qty--;
-            if (ordine[id].qty <= 0) delete ordine[id];
-        }
-        renderOrdine();
-    });
+    function aggiornaTotal() {
+        const tot = Object.values(ordine).reduce((s, p) => s + p.price * p.qty, 0);
+        const scontato = scontoAttivo > 0 ? tot * (1 - scontoAttivo / 100) : tot;
+        if (orderTotalEl) orderTotalEl.textContent = fmt(scontato) + ' €';
+        const input = document.getElementById('input-totale-finale');
+        if (input) input.value = scontato.toFixed(2);
+        const inputLordo = document.getElementById('input-totale-lordo');
+        if (inputLordo) inputLordo.value = tot.toFixed(2);
+    }
 
-    // ── Svuota ────────────────────────────────────────────────────────────────
-    btnSvuota?.addEventListener('click', () => {
-        if (!Object.keys(ordine).length) return;
-        if (confirm("Svuotare l'ordine?")) {
-            Object.keys(ordine).forEach(k => delete ordine[k]);
-            renderOrdine();
-        }
-    });
-
-    // ── Invia in cucina ───────────────────────────────────────────────────────
-    btnInvia?.addEventListener('click', () => {
-        const idTavolo = new URLSearchParams(location.search).get('tavolo');
-        if (!idTavolo) { alert('Seleziona prima un tavolo.'); return; }
-
-        const piatti = Object.entries(ordine).map(([id, p]) => ({ id, qty: p.qty }));
-        if (!piatti.length) { alert('Aggiungi almeno un piatto.'); return; }
-
-        btnInvia.disabled    = true;
-        btnInvia.textContent = 'Invio…';
-
-        fetch('ordine_ajax.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id_tavolo: idTavolo,
-                piatti,
-                note: noteCucina?.value ?? ''
-            })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                showToast('✅ Ordine inviato in cucina!', 'success');
-                Object.keys(ordine).forEach(k => delete ordine[k]);
-                renderOrdine();
-                if (noteCucina) noteCucina.value = '';
-            } else {
-                showToast('⚠️ ' + (data.message ?? "Errore nell'invio."), 'error');
-            }
-        })
-        .catch(() => showToast('⚠️ Errore di rete.', 'error'))
-        .finally(() => {
-            btnInvia.disabled    = false;
-            btnInvia.textContent = 'Invia in cucina';
-        });
-    });
-
-    // ── Render ordine ─────────────────────────────────────────────────────────
     function renderOrdine() {
         if (!orderItemsUl) return;
         orderItemsUl.innerHTML = '';
@@ -179,20 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         aggiornaTotal();
     }
 
-    function aggiornaTotal() {
-        const tot = Object.values(ordine).reduce((s, p) => s + p.price * p.qty, 0);
-        const scontato = scontoAttivo > 0 ? tot * (1 - scontoAttivo / 100) : tot;
-        if (orderTotalEl) orderTotalEl.textContent = fmt(scontato) + ' €';
-        const input = document.getElementById('input-totale-finale');
-        if (input) input.value = scontato.toFixed(2);
-    }
-
-    function fmt(n) { return n.toFixed(2).replace('.', ','); }
-
-    function escHtml(str) {
-        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
     function showToast(msg, type = 'success') {
         const t = document.createElement('div');
         t.textContent = msg;
@@ -209,11 +119,93 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => t.remove(), 3200);
     }
 
+    async function caricaOrdineAttivo(idTavolo) {
+        if (!idTavolo) return;
+        try {
+            const res  = await fetch(`ordine_attivo.php?tavolo=${idTavolo}`);
+            const data = await res.json();
+            Object.keys(ordine).forEach(k => delete ordine[k]);
+            data.forEach(p => {
+                ordine[p.id] = { title: p.nome, price: parseFloat(p.prezzo_unitario), qty: p.quantita };
+            });
+            renderOrdine();
+        } catch(e) {
+            console.error('Errore caricamento ordine:', e);
+        }
+    }
+
+    const idTavoloInit = new URLSearchParams(location.search).get('tavolo');
+    caricaOrdineAttivo(idTavoloInit);
+
+    document.querySelectorAll('.dish-add').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const li    = btn.closest('.dish');
+            const id    = li.dataset.id;
+            const price = parseFloat(li.dataset.price);
+            const title = li.dataset.title;
+            if (ordine[id]) ordine[id].qty++;
+            else ordine[id] = { title, price, qty: 1 };
+            renderOrdine();
+        });
+    });
+
+    orderItemsUl?.addEventListener('click', e => {
+        const item = e.target.closest('.order-item');
+        if (!item) return;
+        const id = item.dataset.id;
+        if (e.target.classList.contains('qty-plus')) {
+            ordine[id].qty++;
+        } else if (e.target.classList.contains('qty-minus')) {
+            ordine[id].qty--;
+            if (ordine[id].qty <= 0) delete ordine[id];
+        }
+        renderOrdine();
+    });
+
+    btnSvuota?.addEventListener('click', () => {
+        if (!Object.keys(ordine).length) return;
+        if (confirm("Svuotare l'ordine?")) {
+            Object.keys(ordine).forEach(k => delete ordine[k]);
+            renderOrdine();
+        }
+    });
+
+    btnInvia?.addEventListener('click', () => {
+        const idTavolo = new URLSearchParams(location.search).get('tavolo');
+        if (!idTavolo) { alert('Seleziona prima un tavolo.'); return; }
+
+        const piatti = Object.entries(ordine).map(([id, p]) => ({ id, qty: p.qty }));
+        if (!piatti.length) { alert('Aggiungi almeno un piatto.'); return; }
+
+        btnInvia.disabled    = true;
+        btnInvia.textContent = 'Invio…';
+
+        fetch('ordine_ajax.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_tavolo: idTavolo, piatti, note: noteCucina?.value ?? '' })
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Ordine inviato in cucina!', 'success');
+                    Object.keys(ordine).forEach(k => delete ordine[k]);
+                    renderOrdine();
+                    if (noteCucina) noteCucina.value = '';
+                } else {
+                    showToast('⚠️ ' + (data.message ?? "Errore nell'invio."), 'error');
+                }
+            })
+            .catch(() => showToast('⚠️ Errore di rete.', 'error'))
+            .finally(() => {
+                btnInvia.disabled    = false;
+                btnInvia.textContent = 'Invia in cucina';
+            });
+    });
+
     const btnVerifica = document.getElementById('btn-verifica-coupon');
     const feedbackEl  = document.getElementById('coupon-feedback');
     const inputCoupon = document.getElementById('codice-coupon');
-
-    let scontoAttivo = 0;
 
     btnVerifica?.addEventListener('click', () => {
         const codice = inputCoupon?.value.trim().toUpperCase();
@@ -226,15 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     scontoAttivo = data.sconto;
                     feedbackEl.textContent = `✅ Coupon valido: -${data.sconto}% applicato.`;
                     feedbackEl.style.color = '#35686A';
-                    aggiornaTotal();
                 } else {
                     scontoAttivo = 0;
                     feedbackEl.textContent = '❌ Coupon non valido o già usato.';
                     feedbackEl.style.color = '#8E3D2D';
-                    aggiornaTotal();
                 }
+                aggiornaTotal();
             })
             .catch(() => { feedbackEl.textContent = 'Errore di rete.'; });
     });
 });
-

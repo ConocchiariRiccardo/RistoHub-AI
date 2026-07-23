@@ -81,10 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: " . $_SERVER['PHP_SELF'] . "?tab=sala"); exit;
 
     } elseif (isset($_POST['chiudi_ordine'])) {
-        $idTavoloChiusura = intval($_POST['id_tavolo_chiusura']);
-        $totale           = floatval($_POST['totale_finale']);
-        $codiceCoupon     = strtoupper(trim($_POST['codice_coupon'] ?? ''));
-        $ordineAttivo     = $ordineObj->getOrdineAttivoByTavolo($idTavoloChiusura);
+        error_log("POST chiudi_ordine: " . print_r($_POST, true));
+        $idTavoloChiusura  = intval($_POST['id_tavolo_chiusura']);
+        $totale            = floatval($_POST['totale_finale']);
+        $totaleLordo       = floatval($_POST['totale_lordo'] ?? $totale);
+        $codiceCoupon      = strtoupper(trim($_POST['codice_coupon'] ?? ''));
+        $ordineAttivo      = $ordineObj->getOrdineAttivoByTavolo($idTavoloChiusura);
 
         if ($ordineAttivo) {
             $couponObj = new Coupon();
@@ -96,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $ordineObj->chiudiOrdine($ordineAttivo['id'], $totale);
+            $ordineObj->chiudiOrdine($ordineAttivo['id'], $totale, $totaleLordo);
             $tavoloObj->setStato($idTavoloChiusura, 'libero');
         }
         header("Location: " . $_SERVER['PHP_SELF']); exit;

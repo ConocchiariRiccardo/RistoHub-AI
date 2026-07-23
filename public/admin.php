@@ -214,7 +214,7 @@ foreach ($tavoli as $t) {
     $htmlTavoli .= "<p>Posizione: " . htmlspecialchars($t['posizione'] ?? '-') . "</p>";
     $htmlTavoli .= "<p>Stato: <span class='badge badge-" . ($t['stato'] === 'libero' ? 'green' : 'red') . "'>" . $t['stato'] . "</span></p>";
     $htmlTavoli .= "<form method='post'>";
-    $htmlTavoli .= "<button type='submit' class='btn-secondary' name='modifica_tavolo' value='" . $t['id'] . "'>Modifica</button>";
+    $htmlTavoli .= "<button type='submit' class='btn-secondary' name='modifica_tavolo' value='" . $t['id'] . "' style='margin: 10px 0;'>Modifica</button>";
     $htmlTavoli .= "<button type='submit' class='btn-primary' name='elimina_tavolo' value='" . $t['id'] . "' onclick=\"return confirm('Eliminare?')\">Elimina</button>";
     $htmlTavoli .= "</form></div></div>";
 }

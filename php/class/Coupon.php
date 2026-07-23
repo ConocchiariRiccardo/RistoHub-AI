@@ -21,28 +21,19 @@ class Coupon {
         return $stmt->fetchAll();
     }
 
-    public function generaCoupon(int $usersId, int $punti): ?array {
-        $sconto = null;
-        $sogliaUsata = null;
+    public function generaCoupon(int $usersId, int $punti, int $sogliaScelta = 0): ?array {
+        if (!isset(self::SOGLIE[$sogliaScelta]) || $punti < $sogliaScelta) return null;
 
-        foreach (self::SOGLIE as $soglia => $percentuale) {
-            if ($punti >= $soglia) {
-                $sconto = $percentuale;
-                $sogliaUsata = $soglia;
-                break;
-            }
-        }
-
-        if (!$sconto) return null;
-
+        $sconto = self::SOGLIE[$sogliaScelta];
         $codice = strtoupper('RH-' . substr(md5(uniqid($usersId, true)), 0, 8));
+
         $stmt = $this->pdo->prepare("INSERT INTO coupon (users_id, codice, sconto_percentuale) VALUES (?, ?, ?)");
         $stmt->execute([$usersId, $codice, $sconto]);
 
         $stmtP = $this->pdo->prepare("UPDATE users SET punti_loyalty = punti_loyalty - ? WHERE id = ?");
-        $stmtP->execute([$sogliaUsata, $usersId]);
+        $stmtP->execute([$sogliaScelta, $usersId]);
 
-        return ['codice' => $codice, 'sconto' => $sconto, 'punti_scalati' => $sogliaUsata];
+        return ['codice' => $codice, 'sconto' => $sconto, 'punti_scalati' => $sogliaScelta];
     }
 
     public function usaCoupon(string $codice, int $usersId): bool {
